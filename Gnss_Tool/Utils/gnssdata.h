@@ -13,6 +13,12 @@ struct StandardTime{
 
 struct GnssData{
     std::vector<double> data; //some collection of data
+
+    bool operator==(const GnssData &other) const
+    {
+        return this->data==other.data;
+    }
+
     //etc
 };
 

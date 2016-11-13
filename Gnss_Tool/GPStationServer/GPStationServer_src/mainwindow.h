@@ -6,7 +6,9 @@
 #include <QtSerialPort/QSerialPort>
 #include <QFile>
 #include "gnssdata.h"
-#include "gnssdatahandler.h"
+#include "datahandler.h"
+#include "gpstationserver.h"
+#include "utils.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -36,6 +38,7 @@ private slots:
     void readData();
     void seansStart();
     void seansStop();
+    void errorNotification(QString message);
     void handleError(QSerialPort::SerialPortError error);
     void transferDataToGraphics();
 
@@ -52,7 +55,8 @@ private:
     SettingsDialog *settings;
     TimeGraph *timeGraph;
     QSerialPort *serial;
-    GnssDataHandler *dataHandler;
+    Abstracthandler *dataHandler;
+    ITransmittableServer *server;
 };
 
 #endif // MAINWINDOW_H

@@ -1,15 +1,33 @@
-#include "gnssdatahandler.h"
+#include "datahandler.h"
 #include <QTime>
 #include <QDate>
 #include <QDebug>
 
-GnssDataHandler::GnssDataHandler()
+Abstracthandler::Abstracthandler()
 {
     timeStart = NULL;
     timeStop = NULL;
 }
 
-GnssData GnssDataHandler::handle(QByteArray data)
+Abstracthandler::~Abstracthandler()
+{
+    if(timeStart!=NULL) {
+        delete timeStart;
+    }
+    if(timeStop!=NULL) {
+        delete timeStop;
+    }
+}
+
+ConcreteHandler::ConcreteHandler()
+{
+}
+
+GnssDataHandler::GnssDataHandler()
+{
+}
+
+GnssData ConcreteHandler::handle(QByteArray data)
 {
     //TODO: handle algorithm
     GnssData someData;
@@ -18,8 +36,20 @@ GnssData GnssDataHandler::handle(QByteArray data)
     return someData;
 }
 
+GnssData GnssDataHandler::handle(QByteArray data)
+{
+    //TODO: handle algorithm
+//    GnssData someData;
+//    someData.data.push_back(1.1);
+//    someData.data.push_back(1.2);
+    GnssData result = handler.handle(data);
+    return result;
+}
 
-QByteArray GnssDataHandler::startCommand()
+
+
+
+QByteArray Abstracthandler::startCommand()
 {
     QByteArray timeLog;
     /** for example log command **/
@@ -29,7 +59,7 @@ QByteArray GnssDataHandler::startCommand()
     return timeLog;
 }
 
-void GnssDataHandler::startTimer()
+void Abstracthandler::startTimer()
 {
     if(timeStart == NULL) {
         timeStart = new StandardTime();
@@ -44,7 +74,7 @@ void GnssDataHandler::startTimer()
     }
 }
 
-void GnssDataHandler::stopTimer()
+void Abstracthandler::stopTimer()
 {
     if(timeStop == NULL) {
         timeStop = new StandardTime();
@@ -59,19 +89,19 @@ void GnssDataHandler::stopTimer()
     }
 }
 
-QByteArray GnssDataHandler::stopCommand()
+QByteArray Abstracthandler::stopCommand()
 {
     QByteArray stopLog;
     stopLog.append("UNLOGALL\r\n");
     return stopLog;
 }
 
-StandardTime GnssDataHandler::getStartTime()
+StandardTime Abstracthandler::getStartTime()
 {
     return *this->timeStart;
 }
 
-StandardTime GnssDataHandler::getStopTime()
+StandardTime Abstracthandler::getStopTime()
 {
     return *this->timeStop;
 }

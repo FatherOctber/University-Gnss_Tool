@@ -1,5 +1,10 @@
+#include <QtWidgets/QApplication>
 #include <QString>
 #include <QtTest>
+#include "datahandler.h"
+#include "utils.h"
+
+using namespace std;
 
 class TestMain : public QObject
 {
@@ -9,7 +14,7 @@ public:
     TestMain();
 
 private Q_SLOTS:
-    void testCase1();
+    void testGnssDataHandle();
 };
 
 //test_impl
@@ -18,9 +23,14 @@ TestMain::TestMain()
 {
 }
 
-void TestMain::testCase1()
+void TestMain::testGnssDataHandle()
 {
-    QVERIFY2(true, "Failure");
+    Abstracthandler *handler = new GnssDataHandler();
+    /**test only**/
+    GnssData testData;
+    testData.data.push_back(1.1);
+    testData.data.push_back(1.2);
+    QCOMPARE(handler->handle(QByteArray("")),testData);
 }
 
 QTEST_APPLESS_MAIN(TestMain)

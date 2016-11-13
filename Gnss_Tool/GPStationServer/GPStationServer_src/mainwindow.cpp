@@ -27,6 +27,11 @@ MainWindow::MainWindow(QWidget *parent) :
     settings = new SettingsDialog;
     timeGraph = new TimeGraph;
 
+    QString parametres = QDir::currentPath()+"/settings.ini";
+    server = new GPStationServer( QHostAddress(Utils::getSetting(parametres, "host")),
+                                                Utils::getSetting(parametres, "port").toInt());
+    server->startUp();
+
     ui->actionConnect->setEnabled(true);
     ui->actionDisconnect->setEnabled(false);
     ui->actionQuit->setEnabled(true);
@@ -41,6 +46,7 @@ MainWindow::~MainWindow()
     delete ui;
     delete timeGraph;
     delete dataHandler;
+    delete server;
 }
 
 void MainWindow::openSerialPort()
@@ -100,12 +106,17 @@ void MainWindow::about()
 
 void MainWindow::writeData(const QByteArray &data)
 {
+    QByteArray dataToCom;
+    dataToCom.append("Data to GPStation: "+QString(data));
+    console->putData(dataToCom);
     serial->write(data);
 }
 
 void MainWindow::readData()
 {
     QByteArray data = serial->readAll();
+    QByteArray dataFromCom;
+    dataFromCom.append("Data from GPStation: "+QString(data));
     console->putData(data);
     dataHandler->handle(data);
 }
@@ -168,4 +179,15 @@ void MainWindow::initActionsConnections()
     connect(ui->actionGraph, SIGNAL(triggered()), this, SLOT(transferDataToGraphics()));
     connect(this, SIGNAL(sendData(std::vector<double>,std::vector<double>, const StandardTime&, const StandardTime&)),
             timeGraph, SLOT(dataset(std::vector<double>, std::vector<double>,  const StandardTime&, const StandardTime&)));
+    connect(server, SIGNAL(error(QString)), this, SLOT(errorNotification(QString)));
+    connect(server, SIGNAL(transmitData(QByteArray)), this, SLOT(writeData(QByteArray)));
+}
+
+void MainWindow::errorNotification(QString message)
+{
+    QMessageBox::information(
+                this,
+                tr("Server condition"),
+                message );
+    exit(1);
 }

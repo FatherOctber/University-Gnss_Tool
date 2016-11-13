@@ -1,5 +1,5 @@
 greaterThan(QT_MAJOR_VERSION, 4) {
-    QT       += widgets serialport
+    QT       += widgets serialport network
 } else {
     include($$QTSERIALPORT_PROJECT_ROOT/src/serialport/qt4support/serialport.prf)
 }
@@ -15,7 +15,9 @@ SOURCES += \
     settingsdialog.cpp \
     console.cpp \
     timegraph.cpp \
-    gnssdatahandler.cpp
+    abstractserver.cpp \
+    gpstationserver.cpp \
+    datahandler.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -23,8 +25,9 @@ HEADERS += \
     console.h \
     version.h \
     timegraph.h \
-    gnssdatahandler.h \
-    gnssdata.h
+    abstractserver.h \
+    gpstationserver.h \
+    datahandler.h
 
 FORMS += \
     mainwindow.ui \
@@ -34,7 +37,7 @@ FORMS += \
 RESOURCES += \
     terminal.qrc
 
-#include QWT
+#=======include QWT========
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../../../../../Qt/qwt-6.1.3/lib/ -lqwt
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../../../../../Qt/qwt-6.1.3/lib/ -lqwtd
 else:unix: LIBS += -L$$PWD/../../../../../../../../../Qt/qwt-6.1.3/lib/ -lqwt
@@ -47,3 +50,22 @@ else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../../../..
 else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../../../../../../../../../Qt/qwt-6.1.3/lib/qwt.lib
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../../../../../../../../../Qt/qwt-6.1.3/lib/qwtd.lib
 else:unix: PRE_TARGETDEPS += $$PWD/../../../../../../../../../Qt/qwt-6.1.3/lib/libqwt.a
+#===========================
+
+#=======include UTILS========
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../Utils/release/ -lUtils
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../Utils/debug/ -lUtils
+else:unix: LIBS += -L$$OUT_PWD/../../Utils/ -lUtils
+
+INCLUDEPATH += $$PWD/../../Utils
+DEPENDPATH += $$PWD/../../Utils
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Utils/release/libUtils.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Utils/debug/libUtils.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Utils/release/Utils.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Utils/debug/Utils.lib
+else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../Utils/libUtils.a
+#===========================
+
+DISTFILES += \
+    GPStationServer_src.pri
