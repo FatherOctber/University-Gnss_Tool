@@ -12,7 +12,8 @@ TEMPLATE = app
 
 
 SOURCES += tst_testmain.cpp
-DEFINES += SRCDIR=\\\"$$PWD/\\\"
+DEFINES += SRCDIR=\\\"$$PWD/\\\" \
+        TEST_RUN
 
 #=======include UTILS========
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../Utils/release/ -lUtils
