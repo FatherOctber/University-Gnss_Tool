@@ -27,9 +27,8 @@ MainWindow::MainWindow(QWidget *parent) :
     settings = new SettingsDialog;
     timeGraph = new TimeGraph;
 
-    QString parametres = QDir::currentPath()+"/settings.ini";
-    server = new GPStationServer( QHostAddress(Utils::getSetting(parametres, "host")),
-                                                Utils::getSetting(parametres, "port").toInt());
+    server = new GPStationServer( QHostAddress(Utils::getSetting("host")),
+                                                Utils::getSetting("port").toInt());
     server->startUp();
 
     ui->actionConnect->setEnabled(true);
