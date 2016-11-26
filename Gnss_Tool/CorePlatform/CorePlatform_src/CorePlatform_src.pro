@@ -16,10 +16,10 @@ SOURCES += coreplatform.cpp \
     baselogger.cpp
 
 HEADERS += coreplatform.h\
-        coreplatform_global.h \
     platformmodule.h \
     baselogger.h \
-    controls.h
+    controls.h \
+    platformlogic_global.h
 
 unix {
     target.path = /usr/lib

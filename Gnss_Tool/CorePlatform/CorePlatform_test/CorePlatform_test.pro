@@ -10,7 +10,8 @@ TEMPLATE = app
 
 SOURCES += tst_coreplatform_test.cpp \
     testplatform.cpp
-DEFINES += SRCDIR=\\\"$$PWD/\\\"
+DEFINES += SRCDIR=\\\"$$PWD/\\\" \
+    TEST_RUN
 
 HEADERS += \
     testplatform.h

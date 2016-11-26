@@ -1,15 +1,24 @@
 #include "baselogger.h"
 #include "controls.h"
+#include "utils.h"
 #include <QDebug>
 
-BaseLogger::BaseLogger(QObject *parent):AbstractModule(parent)
+BaseLogger::BaseLogger(QObject *parent, QFile *logFile):AbstractModule(parent)
 {
-    QString settings = Utils::SETTINGS;
-    logFile = new QFile( Utils::getSetting(settings, "log_file"));
-    if(!logFile->open(QFile::WriteOnly | QFile::Append)) {
-        qDebug() << "!!!Cant open log file!!!";
+    if(logFile) {
+        this->logFile = logFile;
+        if(!openLogFile(false)) {
+            qDebug() << "!!!Cant open log file!!!";
+        } else {
+            log("Successfuly open log file!");
+        }
     } else {
-        log("Successfuly open log file!");
+        this->logFile = new QFile( Utils::getSetting("log_file"));
+        if(!openLogFile(true)) {
+            qDebug() << "!!!Cant open log file!!!";
+        } else {
+            log("Successfuly open log file!");
+        }
     }
 }
 
@@ -20,7 +29,7 @@ BaseLogger::~BaseLogger()
     }
 }
 
-bool BaseLogger::setup(AbstractPlatformConfigurator *configurator)
+bool BaseLogger::setup(AbstractPlatformBuilder *configurator)
 {
     //nothing to bind
     return true;
@@ -28,7 +37,23 @@ bool BaseLogger::setup(AbstractPlatformConfigurator *configurator)
 
 void BaseLogger::log(QString logString)
 {
-    logFile->write(QByteArray::fromStdString("BASE_LOGGER:: "+logString.toStdString()));
+    if(openLogFile(false)) {
+        logFile->write(QByteArray::fromStdString(getDescriptor().toStdString() + ": " + logString.toStdString() + "\n"));
+        logFile->close();
+    } else {
+        qDebug() << "!!!Can not write log to file!!!";
+    }
+}
+
+bool BaseLogger::openLogFile(bool truncate)
+{
+    logFile->close();
+    if(truncate) {
+        return logFile->open(QFile::WriteOnly | QFile::Append | QFile::Truncate);
+    }
+    else {
+        return logFile->open(QFile::WriteOnly | QFile::Append);
+    }
 }
 
 

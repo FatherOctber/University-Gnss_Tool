@@ -9,29 +9,21 @@ namespace PlatformModule {
     ExecResult ExecResult::ERROR = ExecResult(1);
     ExecResult ExecResult::ANY = ExecResult(10);
 
-    AbstractPlatformConfigurator::AbstractPlatformConfigurator()
+    AbstractPlatformBuilder::AbstractPlatformBuilder()
     {
     }
 
-    AbstractPlatformConfigurator::~AbstractPlatformConfigurator()
+    AbstractPlatformBuilder::~AbstractPlatformBuilder()
     {
         qDebug() << "Run AbstractPlatformConfigurator destructor:: clear modules";
         modules.clear();
     }
 
-    AbstractModule* AbstractPlatformConfigurator::getModule(ModuleDescriptor descriptor)
+    AbstractModule* AbstractPlatformBuilder::getModule(ModuleDescriptor descriptor)
     {
         return modules[descriptor];
     }
 
-    list<AbstractModule*> AbstractPlatformConfigurator::getModules()
-    {
-        std::list<AbstractModule*> moduleList;
-        std::for_each(modules.begin(), modules.end(), [&](const std::pair<ModuleDescriptor, AbstractModule*>& mapModule) {
-            moduleList.push_back(mapModule.second);
-        });
-        return moduleList;
-    }
 
     AbstractModule::AbstractModule(QObject *parent)
         : QObject(parent)

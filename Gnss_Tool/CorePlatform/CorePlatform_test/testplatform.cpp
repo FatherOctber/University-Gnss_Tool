@@ -14,7 +14,7 @@ ModuleDescriptor TestModule1::getDescriptor()
     return PINEAPPLE;
 }
 
-bool TestModule1::setup(AbstractPlatformConfigurator *configurator)
+bool TestModule1::setup(AbstractPlatformBuilder *configurator)
 {
     AbstractModule* pen = configurator->getModule(PEN);
     if(pen) {
@@ -49,7 +49,7 @@ ModuleDescriptor TestModule2::getDescriptor()
     return PEN;
 }
 
-bool TestModule2::setup(AbstractPlatformConfigurator *configurator)
+bool TestModule2::setup(AbstractPlatformBuilder *configurator)
 {
     AbstractModule* pineaple = configurator->getModule(PINEAPPLE);
     if(pineaple) {
@@ -83,21 +83,20 @@ TestPlatform::TestPlatform(QObject* parent, std::list<AbstractTestModule*> testM
     moduleList = testModules;
 }
 
-void TestPlatform::configurate()
+void TestPlatform::buildPlatform()
 {
     for(AbstractTestModule* module : moduleList) {
         modules[module->getDescriptor()] = module;
     }
 }
 
-bool TestPlatform::setup(AbstractPlatformConfigurator *configurator)
+bool TestPlatform::setup(AbstractPlatformBuilder *configurator)
 {
     try{
         connect(this, SIGNAL(sentLog(QByteArray)), configurator->getModule(PEN), SLOT(execute(QByteArray)));
         connect(this, SIGNAL(handover()), configurator->getModule(PINEAPPLE), SLOT(execute()));
-        foreach(AbstractModule* module, configurator->getModules()) {
-            module->setup(configurator);
-        }
+        configurator->getModule(PEN)->setup(configurator);
+        configurator->getModule(PINEAPPLE)->setup(configurator);
     }
     catch(std::exception& ex) {
         qDebug() << ex.what();
@@ -105,4 +104,9 @@ bool TestPlatform::setup(AbstractPlatformConfigurator *configurator)
     }
 
     return true;
+}
+
+ModuleDescriptor TestPlatform::getDescriptor()
+{
+    return ModuleDescriptor("TEST_PLATFORM");
 }

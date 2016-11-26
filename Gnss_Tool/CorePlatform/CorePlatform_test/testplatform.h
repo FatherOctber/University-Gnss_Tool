@@ -31,7 +31,7 @@ public:
 
     virtual ModuleDescriptor getDescriptor();
 
-    virtual bool setup(AbstractPlatformConfigurator *configurator);
+    virtual bool setup(AbstractPlatformBuilder *configurator);
 
     virtual ExecResult execute(QByteArray data);
 
@@ -57,7 +57,7 @@ public:
 
     virtual ModuleDescriptor getDescriptor();
 
-    virtual bool setup(AbstractPlatformConfigurator *configurator);
+    virtual bool setup(AbstractPlatformBuilder *configurator);
 
     virtual ExecResult execute(QByteArray data);
 
@@ -84,9 +84,9 @@ private:
     std::list<AbstractTestModule*> moduleList;
 
 protected:
-    virtual void configurate();
-    virtual bool setup(AbstractPlatformConfigurator *configurator);
-
+    virtual void buildPlatform();
+    virtual bool setup(AbstractPlatformBuilder *configurator);
+    virtual ModuleDescriptor getDescriptor();
 };
 
 

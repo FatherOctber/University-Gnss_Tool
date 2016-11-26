@@ -1,11 +1,10 @@
 #ifndef COREPLATFORM_H
 #define COREPLATFORM_H
 
-#include "coreplatform_global.h"
-#include "controls.h"
+#include "platformmodule.h"
 using namespace PlatformModule;
 
-class COREPLATFORMSHARED_EXPORT CorePlatform: protected AbstractModule, protected AbstractPlatformConfigurator
+class PLATFORMLOGIC_EXPORT CorePlatform: protected AbstractModule, protected AbstractPlatformBuilder
 {
     Q_OBJECT
 
@@ -18,12 +17,14 @@ signals:
     void sentLog(QByteArray data);
 
 protected:
-    virtual void configurate();
-    virtual bool setup(AbstractPlatformConfigurator *configurator);
+    virtual void buildPlatform();
+    virtual bool setup(AbstractPlatformBuilder *configurator);
+    virtual ModuleDescriptor getDescriptor();
 
 protected slots:
     virtual ExecResult execute(QByteArray data);
     virtual ExecResult execute();
 };
+
 
 #endif // COREPLATFORM_H

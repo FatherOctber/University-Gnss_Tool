@@ -9,11 +9,15 @@ class Utils
 public:
     Utils();
 
-    static QString getSetting(QString file, QString key) {
+    static QString getSetting(QString key) {
+        QString file;
+        #if defined(TEST_RUN)
+            file = QDir::currentPath()+"/test_settings.ini";
+        #else
+            file = QDir::currentPath()+"/settings.ini";
+        #endif
         return SettingsReader(file).value(key);
-    }
-
-    static QString SETTINGS;
+    }   
 };
 
 #endif // UTILS_H

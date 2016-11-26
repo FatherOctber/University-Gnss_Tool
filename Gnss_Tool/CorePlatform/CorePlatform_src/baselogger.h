@@ -4,12 +4,12 @@
 #include "QFile"
 using namespace PlatformModule;
 
-class BaseLogger: public AbstractModule
+class PLATFORMLOGIC_EXPORT BaseLogger: public AbstractModule
 {
 public:
-    BaseLogger(QObject* parent=0);
+    BaseLogger(QObject* parent=0, QFile* logFile=0);
     ~BaseLogger();
-    virtual bool setup(AbstractPlatformConfigurator *configurator);
+    virtual bool setup(AbstractPlatformBuilder *configurator);
     virtual ModuleDescriptor getDescriptor();
 
 public slots:
@@ -19,6 +19,7 @@ public slots:
 private:
     QFile* logFile;
     void log(QString logString);
+    bool openLogFile(bool truncate);
 };
 
 #endif // BASELOGGER_H

@@ -3,11 +3,12 @@
 #include <QObject>
 #include <map>
 #include "QString"
+#include "platformlogic_global.h"
 using namespace std;
 
 namespace PlatformModule{
 
-    struct ExecResult {
+    struct PLATFORMLOGIC_EXPORT ExecResult {
         int retCode;
 
         ExecResult(int code) {
@@ -26,7 +27,7 @@ namespace PlatformModule{
     };
 
 
-    struct ModuleDescriptor
+    struct PLATFORMLOGIC_EXPORT ModuleDescriptor
     {
         QString code;
 
@@ -36,18 +37,30 @@ namespace PlatformModule{
 
         bool operator == (const ModuleDescriptor& other) const
         {
-            return this->code == other.code;
+            return this->code.toLower() == other.code.toLower();
         }
 
         bool operator > (const ModuleDescriptor& other) const
         {
-            return this->code > other.code;
+            return this->code.toLower() > other.code.toLower();
         }
 
         bool operator < (const ModuleDescriptor& other) const
         {
-            return this->code < other.code;
+            return this->code.toLower() < other.code.toLower();
         }
+
+        friend ostream& operator << (ostream& os, const ModuleDescriptor& descriptor)
+        {
+            os << descriptor.code.toStdString();
+            return os;
+        }
+
+        const std::string toStdString()
+        {
+            return code.toStdString();
+        }
+
     };
 
     /**
@@ -56,17 +69,16 @@ namespace PlatformModule{
      */
     class AbstractModule;
 
-    class AbstractPlatformConfigurator
+    class PLATFORMLOGIC_EXPORT AbstractPlatformBuilder
     {
     protected:
         map<ModuleDescriptor, AbstractModule*> modules;
 
     public:
-        AbstractPlatformConfigurator();
-        virtual ~AbstractPlatformConfigurator();
-        virtual void configurate()=0;
+        AbstractPlatformBuilder();
+        virtual ~AbstractPlatformBuilder();
+        virtual void buildPlatform()=0;
         AbstractModule* getModule(ModuleDescriptor descriptor);
-        list<AbstractModule*> getModules();
     };
 
 
@@ -75,14 +87,14 @@ namespace PlatformModule{
      * @brief The AbstractModule class
      * Basic for all modules
      */
-    class AbstractModule: public QObject
+    class PLATFORMLOGIC_EXPORT AbstractModule: public QObject
     {
         Q_OBJECT
 
     public:
         AbstractModule(QObject *parent = 0);
         virtual ~AbstractModule() {}
-        virtual bool setup(AbstractPlatformConfigurator *configurator)=0;
+        virtual bool setup(AbstractPlatformBuilder *configurator)=0;
         virtual ModuleDescriptor getDescriptor();
 
     public slots:
