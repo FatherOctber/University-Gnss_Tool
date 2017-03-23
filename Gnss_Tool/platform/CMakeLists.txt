@@ -1,3 +1,5 @@
+set(PLATFORM platform)
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 include(GenerateExportHeader)
@@ -7,3 +9,4 @@ include(GenerateExportHeader)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/gui)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/services)
+

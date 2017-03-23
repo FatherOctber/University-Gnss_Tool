@@ -14,5 +14,6 @@ add_library(${UTILS_LIB} STATIC ${_UTILS_SOURCES} ${_UTILS_INCLUDES})
 target_include_directories(${UTILS_LIB} PUBLIC include)
 target_link_libraries(${UTILS_LIB} ${QT5_LIBRARIES})
 
+# install utils
 install(TARGETS ${UTILS_LIB} ARCHIVE DESTINATION lib/static)
 install(FILES ${_UTILS_INCLUDES} DESTINATION include/${UTILS_LIB})

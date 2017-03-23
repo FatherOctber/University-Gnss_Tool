@@ -2,6 +2,6 @@
   "bundle.symbolic_name" : "logger",
   "bundle.activator" : true,
   "bundle.name" : "Logger service",
-  "bundle.description" : "This bundle log"
-  "bundle.version" : "0.0.1",
+  "bundle.description" : "This bundle log",
+  "bundle.version" : "0.0.1"
 }

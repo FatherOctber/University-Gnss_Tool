@@ -37,7 +37,7 @@ usFunctionGenerateBundleInit(TARGET Logger OUT _LOGGER_SRC)
 
 add_library(Logger SHARED ${_LOGGER_SRC})
 
-target_link_libraries(Logger CppMicroServices ILogger ${QT5_LIBRARIES})
+target_link_libraries(Logger CppMicroServices ILogger ${SERVICES} ${QT5_LIBRARIES})
 
 set(_logger_bundle logger)
 

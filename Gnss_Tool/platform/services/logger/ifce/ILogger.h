@@ -6,5 +6,5 @@ struct ILOGGER_EXPORT ILogger
   virtual ~ILogger();
 
   //log message
-  virtual void log(const std::string& msg) const = 0;
+  virtual void log(const std::string& msg) = 0;
 };

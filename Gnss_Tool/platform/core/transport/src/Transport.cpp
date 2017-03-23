@@ -14,6 +14,9 @@ class Transport : public BundleActivator
 
     void Start(BundleContext ctx)
     {
+        /**
+         * @brief ref - all need service references
+         */
         auto ref = ctx.GetServiceReference<ILogger>();
         control(ref);
     }
@@ -43,9 +46,9 @@ class Transport : public BundleActivator
         else
         {
             std::cout << "Start send log" << std::endl;
-            const std::string logMsg = "Hello, this is test msg";
+            const std::string logMsg = "Hello, this is test msg tc";
             logger->log(logMsg);
-            std::cout << "Finish send log" << std::endl;
+            std::cout << "Finish send log from tc2" << std::endl;
         }
     }
 };
