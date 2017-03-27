@@ -29,6 +29,7 @@ private slots:
     void about();
     void print(QString data);
     void start();
+    void stop();
 
 signals:
 

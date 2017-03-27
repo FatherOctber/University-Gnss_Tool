@@ -6,7 +6,6 @@
 #include <QtSerialPort/QSerialPort>
 #include <QFile>
 #include "gnssdata.h"
-#include "datahandler.h"
 #include "gpstationserver.h"
 #include "utils.h"
 
@@ -34,13 +33,11 @@ private slots:
     void openSerialPort();
     void closeSerialPort();
     void about();
-    void writeData(const QByteArray &data);
-    void readData();
+    void printToConsole(const QByteArray &data);
     void seansStart();
     void seansStop();
     void errorNotification(QString message);
     void handleError(QSerialPort::SerialPortError error);
-    void transferDataToGraphics();
 
 signals:
     void sendLog(const QByteArray &timeLog);
@@ -53,8 +50,9 @@ private:
     Console *console;
     SettingsDialog *settings;
     QSerialPort *serial;
-    Abstracthandler *dataHandler;
-    ITransmittableServer *server;
+    ElapsedTime timer;
+    TransmittableServer *server;
+
 };
 
 #endif // MAINWINDOW_H

@@ -63,6 +63,27 @@ void PlatformCore::runPlatform()
     }
     catch (const std::exception& e)
     {
+        std::cerr << "Exception on start occured" << std::endl;
+        std::cerr << e.what() << std::endl;
+    }
+}
+
+void PlatformCore::stopPlatform()
+{
+    try
+    {
+        auto bundles = bundleContext.GetBundles();
+
+        for (auto& bundle : bundles)
+        {
+            bundle.Stop();
+        }
+
+        microServicesFw->Stop();
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Exception on stop occured" << std::endl;
         std::cerr << e.what() << std::endl;
     }
 }

@@ -4,15 +4,12 @@
 #include <QObject>
 #include <QtNetwork>
 #include <QTcpSocket>
+#include <QList>
 
-class IServerResponder
-{
-public:
-    virtual QByteArray response() = 0;
-};
-
-
-class AbstractServer: public QObject, protected IServerResponder
+/**
+ * @brief The AbstractServer class - abstract server
+ */
+class AbstractServer: public QObject
 {
     enum Status { GOOD, ERROR, OFF };
 
@@ -20,7 +17,6 @@ class AbstractServer: public QObject, protected IServerResponder
 public:
     explicit AbstractServer(QHostAddress address = QHostAddress::Any, int port=12, QObject *parent = 0);
     ~AbstractServer();
-    QByteArray getClientLastData(); //echo
 
 signals:
     void error(QString message);
@@ -34,34 +30,36 @@ private slots:
     void slotLostConnection();
 
 protected slots:
-    virtual void slotReadClient();
+    virtual QByteArray slotReadClient() = 0;
 
 protected:
     QTcpServer *tcpServer;
     Status serverStatus;
-    QTcpSocket *client; // only one
-    QByteArray clientData;
-    virtual QByteArray response();
+    QList<QTcpSocket*>clients;
+
+private:
     QHostAddress address;
     int port;
-
 };
 
-class ITransmittableServer: public AbstractServer
+/**
+ * @brief The ITransmittableServer class - server with transmit functions
+ */
+class TransmittableServer: public AbstractServer
 {
     Q_OBJECT
 public:
-    explicit ITransmittableServer(QHostAddress address = QHostAddress::Any, int port=12, QObject *parent = 0);
-    ~ITransmittableServer();
+    explicit TransmittableServer(QHostAddress address = QHostAddress::Any, int port=12, QObject *parent = 0);
+    ~TransmittableServer();
 
 signals:
-    void transmitData(QByteArray data);
+    void transmitDataFromServer(const QByteArray &data);
+
+public slots:
+    void transmitDataToServer(const QByteArray &data);
 
 protected slots:
-    virtual void slotReadClient();
-
-protected:
-    virtual QByteArray response();
+    virtual QByteArray slotReadClient();
 };
 
 #endif // ABSTRACTSERVER_H

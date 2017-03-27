@@ -12,9 +12,9 @@ usFunctionGenerateBundleInit(TARGET transport_consumer OUT _TRANSPORT_SOURCES)
 add_library(${TRANSPORT} SHARED ${_TRANSPORT_SOURCES} ${_TRANSPORT_INCLUDES})
 
 # List of available platform services
-set(PLATFORM_SERVICES ILogger)
+set(PLATFORM_SERVICES ILogger IGP6Adapter)
 
-target_link_libraries(${TRANSPORT} ${QT5_LIBRARIES} CppMicroServices ${PLATFORM_SERVICES})
+target_link_libraries(${TRANSPORT} ${QT5_LIBRARIES} ${UTIL_L} CppMicroServices ${PLATFORM_SERVICES})
 
 set(_transport_bundle transport_consumer)
 

@@ -1,19 +1,21 @@
 #ifndef GPSTATIONSERVER_H
 #define GPSTATIONSERVER_H
 #include "abstractserver.h"
+#include <QtSerialPort/QSerialPort>
 
-class GPStationServer : public ITransmittableServer
+class GPStationServer : public TransmittableServer
 {
     Q_OBJECT
 public:
-    explicit GPStationServer(QHostAddress address = QHostAddress::Any, int port=12, QObject *parent = 0);
+    explicit GPStationServer(QSerialPort *receiver, QHostAddress address = QHostAddress::Any, int port=12, QObject *parent = 0);
     ~GPStationServer();
 
-protected slots:
-    virtual void slotReadClient();
+private slots:
+    void writeToReceiver(const QByteArray &data);
+    void readFromReceiver();
 
-protected:
-    virtual QByteArray response();
+private:
+    QSerialPort* receiver;
 };
 
 

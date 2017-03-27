@@ -25,7 +25,7 @@ public:
 
 protected:
     /**
-     * Highly recommended to use async task in interface implementation
+     * Highly recommended to use async task for hard calculations
      */
     template<typename Func> void asyncTask(Func f)
     {

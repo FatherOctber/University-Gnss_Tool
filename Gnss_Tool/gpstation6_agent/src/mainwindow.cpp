@@ -20,12 +20,10 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget(console);
 
     serial = new QSerialPort(this);
-    dataHandler = new GnssDataHandler;
-
     settings = new SettingsDialog;
-
-    server = new GPStationServer( QHostAddress(Utils::getSetting("host")),
-                                                Utils::getSetting("port").toInt());
+    server = new GPStationServer( serial,
+                                  QHostAddress(Utils::getSetting("gpstation_agent_host")),
+                                  Utils::getSetting("gpstation_agent_port").toInt());
     server->startUp();
 
     ui->actionConnect->setEnabled(true);
@@ -34,13 +32,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionConfigure->setEnabled(true);
 
     initActionsConnections();
+    emit sendLog(QByteArray::fromStdString("GPStation-6 agent started"));
 }
 
 MainWindow::~MainWindow()
 {
     delete settings;
     delete ui;
-    delete dataHandler;
+    delete serial;
     delete server;
 }
 
@@ -99,50 +98,35 @@ void MainWindow::about()
                           "Novatel GPStation 6 receiver. Serve one connection (hardware limitation)."));
 }
 
-void MainWindow::writeData(const QByteArray &data)
+void MainWindow::printToConsole(const QByteArray &data)
 {
     QByteArray dataToCom;
-    dataToCom.append("Data to GPStation: "+QString(data));
+    dataToCom.append("Message: " + QString(data) + "\r\n");
+    std::cout << "GP6Agent: " << QString(data).toStdString() << std::endl;
     console->putData(dataToCom);
-    serial->write(data);
-}
-
-void MainWindow::readData()
-{
-    QByteArray data = serial->readAll();
-    QByteArray dataFromCom;
-    dataFromCom.append("Data from GPStation: "+QString(data));
-    console->putData(data);
-    dataHandler->handle(data);
 }
 
 void MainWindow::seansStart()
 {
-    dataHandler->startTimer();
-    QByteArray dataToReceiver = dataHandler->startCommand();
-    emit sendLog(dataToReceiver);
+    if(!timer.started) {
+        timer.startTimer();
+        emit sendLog(QByteArray::fromStdString("Seans started: " + timer.start.toString()));
+        if(Utils::getSetting("test_run").toUpper() == "TRUE") {
+            emit sendLog(QByteArray::fromStdString("Send test message"));
+            server->transmitDataToServer(QByteArray::fromStdString("Hello! This is test run."));
+        }
+    } else {
+        emit sendLog(QByteArray::fromStdString("Seans has been already started!"));
+    }
 }
 
 void MainWindow::seansStop()
 {
-    dataHandler->stopTimer();
-    QByteArray dataToReceiver = dataHandler->stopCommand();
-    emit sendLog(dataToReceiver);
-}
-
-void MainWindow::transferDataToGraphics()
-{
-    qDebug()<<"Send data to Graphic";
-
-    StandardTime start = dataHandler->getStartTime();
-    StandardTime stop = dataHandler->getStopTime();
-
-    std::vector<double> t_data;
-    std::vector<double> f_data;
-    for(int i=0; i<100; i++)
-    {
-        t_data.push_back((double)i);
-        f_data.push_back(i*2.34);
+    if(timer.started) {
+        timer.stopTimer();
+        emit sendLog(QByteArray::fromStdString("Seans stoped: " + timer.stop.toString()));
+    } else {
+        emit sendLog(QByteArray::fromStdString("Seans not started!"));
     }
 }
 
@@ -158,8 +142,7 @@ void MainWindow::initActionsConnections()
 {
     connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
             SLOT(handleError(QSerialPort::SerialPortError)));
-    connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
-    connect(this, SIGNAL(sendLog(QByteArray)), this, SLOT(writeData(QByteArray)));
+    connect(this, SIGNAL(sendLog(QByteArray)), this, SLOT(printToConsole(QByteArray)));
 
     connect(ui->actionConnect, SIGNAL(triggered()), this, SLOT(openSerialPort()));
     connect(ui->actionDisconnect, SIGNAL(triggered()), this, SLOT(closeSerialPort()));
@@ -171,7 +154,7 @@ void MainWindow::initActionsConnections()
     connect(ui->actionStart, SIGNAL(triggered()), this, SLOT(seansStart()));
     connect(ui->actionStop, SIGNAL(triggered()), this, SLOT(seansStop()));
     connect(server, SIGNAL(error(QString)), this, SLOT(errorNotification(QString)));
-    connect(server, SIGNAL(transmitData(QByteArray)), this, SLOT(writeData(QByteArray)));
+    connect(server, SIGNAL(transmitDataFromServer(QByteArray)), this, SLOT(printToConsole(QByteArray)));
 }
 
 void MainWindow::errorNotification(QString message)

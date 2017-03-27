@@ -1,16 +1,16 @@
 #include "abstractserver.h"
+#include <iostream>
 
 AbstractServer::AbstractServer(QHostAddress address, int port, QObject *parent)
     : QObject(parent), address(address), port(port)
 {
     serverStatus = AbstractServer::Status::OFF;
-    client = NULL;
 }
 
 AbstractServer::~AbstractServer()
 {
     shutDown();
-    delete client;
+    clients.clear();
     delete tcpServer;
 }
 
@@ -23,15 +23,15 @@ void AbstractServer:: startUp()
         if (!tcpServer->listen(address, port)) {
             serverStatus = AbstractServer::Status::ERROR;
             QString err = QObject::tr("Unable to start the server: %1.").arg(tcpServer->errorString());
-            qDebug() <<  err;
+            std::cout <<  err.toStdString() << std::endl;;
             emit error(err);
         } else {
             serverStatus = AbstractServer::Status::GOOD;
-            qDebug() << tcpServer->isListening() << "Server socket listen on port " << port;
-            qDebug() << QString::fromUtf8("Server startup!");
+            std::cout << "Server socket listen on port " << port << std::endl;
+            std::cout << "Server startup!" << std::endl;
         }
     } else {
-        qDebug() << QString::fromUtf8("Server is not shuted down");
+        std::cout << "Server is not shuted down";
     }
 }
 
@@ -39,76 +39,64 @@ void AbstractServer:: startUp()
 void AbstractServer::newuser()
 {
     if(serverStatus == AbstractServer::Status::GOOD){
-        qDebug() << QString::fromUtf8("New connection");
+        std::cout << "New connection" << std::endl;
         QTcpSocket* clientSocket = tcpServer->nextPendingConnection();
-        if(client == NULL || !client->isOpen()) {
-            client = clientSocket;
-            connect(client, SIGNAL(readyRead()),this, SLOT(slotReadClient()));
+        if(clients.indexOf(clientSocket) < 0) {
+            clients.push_back(clientSocket);
+            connect(clientSocket, SIGNAL(readyRead()), this, SLOT(slotReadClient()));
         }
     }
 }
 
-void AbstractServer::slotReadClient()
-{
-    QTcpSocket* clientSocket = (QTcpSocket*)sender();
-    clientData = clientSocket->readAll();
-    qDebug()<<"Client data: "<<clientData.data();
-    QTextStream os(clientSocket);
-    os.setAutoDetectUnicode(true);
-    os << response().data() << "\n";
-}
-
 void AbstractServer::slotLostConnection()
 {
-    qDebug()<<"Client connection has been lost";
+    std::cout <<"Client connection has been lost" << std::endl;
 }
 
 void AbstractServer::shutDown()
 {
     if(serverStatus == AbstractServer::Status::GOOD){
-        if(client != NULL) {
-            QTextStream os(this->client);
-            os.setAutoDetectUnicode(true);
-            os << "Shut down server: " << QDateTime::currentDateTime().toString() << "\n";
-            client->close();
+        if(!clients.empty()) {
+            for(QTcpSocket* client : clients) {
+                QTextStream os(client);
+                os.setAutoDetectUnicode(true);
+                os << "Shutdown server: " << QDateTime::currentDateTime().toString() << "\n";
+                client->close();
+            }
         }
         tcpServer->close();
-        qDebug() << QString::fromUtf8("Server shutdown");
+        std::cout << "Server shutdown: " << QDateTime::currentDateTime().toString().toStdString() << std::endl;
         serverStatus = AbstractServer::Status::OFF;
     }
 }
 
-QByteArray AbstractServer::getClientLastData()
+
+TransmittableServer::TransmittableServer(QHostAddress address, int port, QObject *parent) : AbstractServer(address, port, parent)
 {
+}
+
+TransmittableServer::~TransmittableServer()
+{
+}
+
+QByteArray TransmittableServer::slotReadClient()
+{
+    QTcpSocket* clientSocket = (QTcpSocket*)sender();
+    QByteArray clientData = clientSocket->readAll();
+    emit transmitDataFromServer(clientData);
     return clientData;
 }
 
-
-QByteArray AbstractServer::response()
+void TransmittableServer::transmitDataToServer(const QByteArray &data)
 {
-    QByteArray response;
-    response.append("Good Evening!\r\n");
-    return response;
+    if(!clients.empty()) {
+        for(QTcpSocket* client : clients) {
+            QTextStream os(client);
+            os.setAutoDetectUnicode(true);
+            os << data.data() << endl;
+        }
+    }
 }
-
-ITransmittableServer::ITransmittableServer(QHostAddress address, int port, QObject *parent) : AbstractServer(address, port, parent)
-{
-}
-
-ITransmittableServer::~ITransmittableServer()
-{
-}
-
-QByteArray ITransmittableServer::response()
-{
-    return AbstractServer::response();
-}
-
-void ITransmittableServer::slotReadClient() {
-    AbstractServer::slotReadClient();
-    emit transmitData(clientData);
-}
-
 
 
 

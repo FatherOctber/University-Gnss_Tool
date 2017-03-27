@@ -59,10 +59,17 @@ void MainWindow::start()
     }
 }
 
+void MainWindow::stop()
+{
+    platformCore->stopPlatform();
+    print("Platform Core was stoped");
+}
+
 void MainWindow::initActionsConnections()
 {
     connect(ui->actionQuit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->actionClear, SIGNAL(triggered()), console, SLOT(clear()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     connect(ui->actionStart, SIGNAL(triggered()), this, SLOT(start()));
+    connect(ui->actionStop, SIGNAL(triggered()), this, SLOT(stop()));
 }

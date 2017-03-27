@@ -1,0 +1,7 @@
+{
+  "bundle.symbolic_name" : "gp6adapter",
+  "bundle.activator" : true,
+  "bundle.name" : "GPStation-6 agent adapter service",
+  "bundle.description" : "The service connects to GPStation-6 agent server and transmit log-commands and receives iono-information",
+  "bundle.version" : "0.0.1"
+}

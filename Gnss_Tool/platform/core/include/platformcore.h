@@ -19,6 +19,7 @@ public:
     PlatformCore();
     int load(std::list<std::string> services);
     void runPlatform();
+    void stopPlatform();
 
 private:
     Framework* microServicesFw;

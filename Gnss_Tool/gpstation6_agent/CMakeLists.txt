@@ -18,3 +18,5 @@ target_link_libraries(${GPSTATION6_AGENT}_CONFIG ${QT5_LIBRARIES} ${UTIL_L})
 add_executable(${GPSTATION6_AGENT} ${_GPA_SOURCES} ${_GPA_INCLUDES} ${GPA_RESOURCE})
 target_link_libraries(${GPSTATION6_AGENT} ${GPSTATION6_AGENT}_CONFIG)
 
+# install gpstation-agent app
+install (TARGETS ${GPSTATION6_AGENT} RUNTIME DESTINATION bin)
