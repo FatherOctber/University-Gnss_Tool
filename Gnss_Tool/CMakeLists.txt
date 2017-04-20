@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.1)
 
 project(gtool)
 
@@ -18,6 +18,7 @@ find_package(Qt5SerialPort REQUIRED)
 find_package(Qt5Network REQUIRED)
 find_package(Qt5Core REQUIRED)
 find_package(CppMicroServices REQUIRED)
+find_package(Threads REQUIRED)
 set(QT5_LIBRARIES Qt5::Core Qt5::Widgets Qt5::SerialPort Qt5::Network)
 
 # utils lib for linkage
