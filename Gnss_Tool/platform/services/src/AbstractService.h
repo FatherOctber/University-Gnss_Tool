@@ -42,5 +42,10 @@ protected:
         QtConcurrent::run(pool, f, arg1, arg2);
     }
 
+    template <typename Func, typename Arg1, typename Arg2, typename Arg3> void asyncTask(Func f, const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3)
+    {
+        QtConcurrent::run(pool, f, arg1, arg2, arg3);
+    }
+
 };
 #endif

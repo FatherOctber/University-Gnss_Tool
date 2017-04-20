@@ -5,7 +5,7 @@
 #include <QMainWindow>
 #include <QtSerialPort/QSerialPort>
 #include <QFile>
-#include "gnssdata.h"
+#include "timestruct.h"
 #include "gpstationserver.h"
 #include "utils.h"
 
@@ -19,7 +19,6 @@ QT_END_NAMESPACE
 
 class Console;
 class SettingsDialog;
-class TimeGraph;
 
 class MainWindow : public QMainWindow
 {

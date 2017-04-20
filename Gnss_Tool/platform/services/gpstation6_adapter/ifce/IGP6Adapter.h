@@ -20,4 +20,9 @@ struct IGP6ADAPTER_EXPORT IGP6Adapter
      */
     virtual std::string getAvailableData() = 0;
 
+    /**
+     * @brief disconnect
+     */
+    virtual void disconnect() = 0;
+
 };

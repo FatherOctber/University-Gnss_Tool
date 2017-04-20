@@ -1,0 +1,44 @@
+{
+    "platform_config": {
+        "services": [
+            {
+                "name" : "logger interface",
+                "lib" : "C:/Users/nmishnev/Documents/Univer/science/For_Samples/microservices/getting_started_qt/gtool/gtool_build/bin/bin/ILogger.dll"
+            },
+            {
+                "name" : "logger implement",
+                "lib" : "C:/Users/nmishnev/Documents/Univer/science/For_Samples/microservices/getting_started_qt/gtool/gtool_build/bin/bin/Logger.dll"
+            },
+            {
+                "name" : "transport consumer",
+                "lib" : "C:/Users/nmishnev/Documents/Univer/science/For_Samples/microservices/getting_started_qt/gtool/gtool_build/bin/bin/transport_consumer.dll"
+            }
+        ],
+
+        "commands" : [
+            "unlog all",
+            "log versiona once",
+            "ecutoff 5",
+            "gloecutoff 5",
+            "ismcalibrate enable 0 21600 65",
+            "ismsignalcontrol glol1ca enable enable",
+            "ismsignalcontrol gpsl1ca enable enable",
+            "ismsignalcontrol gpsl2py enable enable",
+            "ismsignalcontrol glol2py enable enable",
+            "ismsignalcontrol gpsl2c enable enable",
+            "ismsignalcontrol glol2c enable enable",
+            "sbascontrol enable EGNOS",
+            "log bestposa ontime 10",
+            "log rangea ontime 1",
+            "log rawephema onchanged",
+            "log almanaca onchanged",
+            "log glorawephema onchanged",
+            "log gloalmanaca onchanged",
+            "log ismredobsa onnew",
+            "log ismredteca onnew",
+            "log rawsbasframea onnew",
+            "log ismrawteca onnew",
+            "log ismcalibrationstatusa onnew"
+        ]
+    }
+}

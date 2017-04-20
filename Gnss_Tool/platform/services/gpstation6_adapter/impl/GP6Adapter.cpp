@@ -5,43 +5,49 @@
 #include <QMutex>
 #include <cppmicroservices/BundleActivator.h>
 #include <iostream>
+#include <QThread>
 
 using namespace cppmicroservices;
 
 class GP6AdapterService : public AbstractService, public IGP6Adapter
 {
 private:
-    QMutex *mutex;
+    BufferedData* dataBuffer;
     GP6Client *gpClient;
 
 public:
 
     GP6AdapterService(): AbstractService("GP6Adapter")
     {
-        mutex = new QMutex();
+        dataBuffer = new BufferedData();
     }
 
     ~GP6AdapterService()
     {
-        delete mutex;
-        delete gpClient;
+        delete dataBuffer;
     }
 
     void connect(const std::string& host, const int& port, const std::list<std::string>& commands)
     {
-        gpClient = new GP6Client();
-        gpClient->tryToConnect(QString::fromStdString(host), port, commands);
+        gpClient = new GP6Client(dataBuffer);
+        gpClient->start(QString::fromStdString(host), port, commands);
     }
 
     std::string getAvailableData()
     {
+        QList<QByteArray> clientData = dataBuffer->popAvailable();
         std::string result = "";
-        QList<QByteArray> dataList = gpClient->getAvailableData();
-        for(auto data : dataList) {
+        for(auto data : clientData) {
             //parse data to gnns data structure
             result += data.toStdString() + "\n";
         }
         return result;
+    }
+
+    void disconnect()
+    {
+        gpClient->stop();
+        delete gpClient;
     }
 };
 

@@ -30,6 +30,15 @@ set(_GP6ADAPTER_SRC
   ${CMAKE_CURRENT_SOURCE_DIR}/impl/GP6Adapter.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/impl/GP6Client.h
   ${CMAKE_CURRENT_SOURCE_DIR}/impl/GP6Client.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/impl/GP6Parser.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/impl/GP6Parser.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/impl/Context.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/impl/Context.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/impl/rtk/novatel.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/impl/rtk/rcvraw.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/impl/rtk/rtkcmn.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/impl/rtk/sbas.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/impl/rtk/rtklib.h
 )
 
 # Set up dependencies to resources to track changes
@@ -39,7 +48,7 @@ usFunctionGenerateBundleInit(TARGET GP6Adapter OUT _GP6ADAPTER_SRC)
 
 add_library(GP6Adapter SHARED ${_GP6ADAPTER_SRC})
 
-target_link_libraries(GP6Adapter CppMicroServices IGP6Adapter ${SERVICE_PARENT} ${QT5_LIBRARIES})
+target_link_libraries(GP6Adapter CppMicroServices IGP6Adapter ${SERVICE_PARENT} ${UTIL_L} ${QT5_LIBRARIES} ${winmm_lib_DIR})
 
 set(_gp6adapter_bundle gp6adapter)
 

@@ -2,7 +2,6 @@
 #include "ui_mainwindow.h"
 #include "console.h"
 #include "platformcore.h"
-#include "platformconfig.h"
 #include "QMessageBox"
 #include "QTime"
 #include "utils.h"
@@ -15,7 +14,6 @@ MainWindow::MainWindow(QWidget *parent) :
     console = new Console;
     console->setEnabled(false);
     platformCore = new PlatformCore;
-    plConfig = new PlatfromConfig;
     setCentralWidget(console);
     initActionsConnections();
     print("GUI Application started");
@@ -39,23 +37,17 @@ void MainWindow::print(QString data)
 
 void MainWindow::start()
 {
-    if(plConfig->loadFile(Utils::getSetting("servicesFile"))) {
-        std::list<service_item> availableServices = plConfig->getPlatformServices();
-        std::list<string> serviceFiles;
-        for(service_item item : availableServices ) {
-            serviceFiles.push_back(item.lib);
-            print("Load "+ item.name + " service"); // to delete
-        }
-        if(platformCore->load(serviceFiles)) {
-            print("Platform Core was successfully loaded");
-            platformCore->runPlatform();
-        }
-        else {
-            print("Platform Core loading failed");
-        }
+    QList<service_item> availableServices = Utils::getSettingServices(Utils::getSetting("servicesFile"));
+    std::list<std::string> serviceFiles;
+    for(service_item item : availableServices ) {
+        serviceFiles.push_back(item.lib.toStdString());
+        print("Load "+ item.name + " service");
     }
-    else  {
-        print("Config file loading failed");
+    if(platformCore->load(serviceFiles)) {
+        print("Platform Core was successfully loaded");
+        platformCore->runPlatform();
+    } else {
+        print("Platform Core loading failed");
     }
 }
 

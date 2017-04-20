@@ -4,49 +4,42 @@
 #include "settingsreader.h"
 #include <QDir>
 #include <QList>
+#include <iostream>
 
 class Utils
 {
-    struct ErrorBox
-    {
-
-    public:
-        void appendEror(QString error)
-        {
-            errorList.append(error);
-        }
-
-        QString getLastError() {
-            return errorList.last();
-        }
-
-        QString getErrors() {
-            QString errors = "";
-            for(QString error : errorList) {
-                errors += error + "\n";
-            }
-            return errors;
-        }
-
-    private:
-        QList<QString> errorList;
-    };
-
 public:
     Utils();
 
+    static QString getSetting(QString key, QString configFileDir) {
+        QString file = configFileDir;
+        return IniSettingsReader(file).value(key);
+    }
+
     static QString getSetting(QString key) {
         QString file;
-        #if defined(TEST_RUN)
-            file = QDir::currentPath()+"/test_settings.ini";
-        #else
-            file = QDir::currentPath()+"/settings.ini";
-        #endif
-        return SettingsReader(file).value(key);
-    }   
+#if defined(TEST_RUN)
+        file = QDir::currentPath()+"test_res/test_settings.ini";
+#else
+        file = QDir::currentPath()+"/settings.ini";
+#endif
+        return IniSettingsReader(file).value(key);
+    }
+
+    static QList<service_item> getSettingServices(QString jsonFile) {
+        return JSonSettingsReader(jsonFile).getPlatformServices();
+    }
+
+    static QList<QString> getSettingCommands(QString jsonFile) {
+        return JSonSettingsReader(jsonFile).getCommandsForReceiver();
+    }
 
     static QString nullSettingSymbol() {
-        return SettingsReader::nullSetting;
+        return IniSettingsReader::nullSetting;
+    }
+
+    static void consoleLog(std::string msg) {
+        std::cout << "CONSOLE_LOGGER:> " << msg << std::endl;
     }
 };
 

@@ -1,18 +1,40 @@
 #ifndef SETTINGSREADER_H
 #define SETTINGSREADER_H
 #include <QString>
-#include <QSettings>
+#include <QJsonDocument>
+#include <list>
 
-class SettingsReader
+class IniSettingsReader
 {
 private:
-    QSettings settings;
     QString settingsFile;
 
 public:
     static QString nullSetting;
-    SettingsReader(QString fileName);
+    IniSettingsReader(QString fileName);
     QString value(QString properties);
 };
 
+
+struct service_item
+{
+    QString name;
+    QString lib;
+
+    service_item(QString name, QString lib) {
+        this->name = name;
+        this->lib = lib;
+    }
+};
+
+class JSonSettingsReader
+{
+public:
+    JSonSettingsReader(QString configFile);
+    QList<service_item> getPlatformServices();
+    QList<QString> getCommandsForReceiver();
+
+private:
+    QJsonDocument config;
+};
 #endif // SETTINGSREADER_H

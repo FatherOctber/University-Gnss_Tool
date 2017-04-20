@@ -2,6 +2,7 @@
 #include <cppmicroservices/BundleContext.h>
 #include <cppmicroservices/GetBundleContext.h>
 #include <QtConcurrent/QtConcurrent>
+#include <AbstractService.h>
 #include "utils.h"
 #include "ServiceList.h"
 
@@ -9,7 +10,7 @@
 
 using namespace cppmicroservices;
 
-class Transport : public BundleActivator
+class TransportDispatcher : public BundleActivator, public AbstractService
 {
     typedef ServiceReference<ILogger> LoggerRef;
     typedef ServiceReference<IGP6Adapter> GP6AdapterRef;
@@ -19,7 +20,9 @@ class Transport : public BundleActivator
         stillActive = true;
         loggerServiceRef = ctx.GetServiceReference<ILogger>();
         gp6AdapterServiceRef = ctx.GetServiceReference<IGP6Adapter>();
-        QtConcurrent::run(this, &Transport::dispatch);
+        asyncTask([&]() {
+            dispatch();
+        });
     }
 
     void Stop(BundleContext)
@@ -42,7 +45,7 @@ class Transport : public BundleActivator
         return true;
     }
 
-public:
+private:
 
     /**
      * @brief dispatch - workflow for services
@@ -61,9 +64,11 @@ public:
         if (!logger || !gp6adapter) {
             std::cout << "WARNING: Some services are not available" << std::endl;
         } else {
-            std::list<std::string> testCommands;
-            testCommands.push_back("Hello Server");
-            testCommands.push_back("I`m Bob");
+            std::list<std::string> commands;
+            QList<QString> coms = Utils::getSettingCommands( Utils::getSetting("commandsFile") );
+            for(QString command : coms) {
+                commands.push_back(command.toStdString());
+            }
 
             logger->log("GP6Adapter try to connect to agent: "
                         + Utils::getSetting("gpstation_agent_host").toStdString()
@@ -71,7 +76,7 @@ public:
 
             gp6adapter->connect(Utils::getSetting("gpstation_agent_host").toStdString(),
                                 Utils::getSetting("gpstation_agent_port").toInt(),
-                                testCommands);
+                                commands);
 
             while (stillActive) {
                 auto receiverData = gp6adapter->getAvailableData();
@@ -90,4 +95,4 @@ private:
     volatile bool stillActive;
 };
 
-CPPMICROSERVICES_EXPORT_BUNDLE_ACTIVATOR(Transport)
+CPPMICROSERVICES_EXPORT_BUNDLE_ACTIVATOR(TransportDispatcher)

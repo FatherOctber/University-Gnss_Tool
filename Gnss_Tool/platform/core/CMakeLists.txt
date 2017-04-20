@@ -3,8 +3,6 @@ set(CORE platform_core)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} include)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/transport)
-
 file(GLOB_RECURSE _CORE_INCLUDES "include/*.h")
 file(GLOB_RECURSE _CORE_SOURCES "src/*.cpp")
 

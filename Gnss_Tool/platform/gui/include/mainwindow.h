@@ -9,7 +9,6 @@ QT_BEGIN_NAMESPACE
 
 class Console;
 class PlatformCore;
-class PlatfromConfig;
 
 namespace Ui {
 class MainWindow;
@@ -40,7 +39,6 @@ private:
     Ui::MainWindow *ui;
     Console *console;
     PlatformCore *platformCore;
-    PlatfromConfig *plConfig;
 };
 
 #endif // MAINWINDOW_H

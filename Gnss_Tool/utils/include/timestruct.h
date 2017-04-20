@@ -1,5 +1,5 @@
-#ifndef GNSSDATA_H
-#define GNSSDATA_H
+#ifndef TIMESTRUCT_H
+#define TIMESTRUCT_H
 #include <string>
 #include <iostream>
 #include <vector>
@@ -47,18 +47,6 @@ struct ElapsedTime
 
 };
 
-struct GnssData{
-    std::vector<double> data; //some collection of data
-
-    bool operator==(const GnssData &other) const
-    {
-        return this->data==other.data;
-    }
-
-    //etc
-};
-
 Q_DECLARE_METATYPE(StandardTime);
-Q_DECLARE_METATYPE(GnssData);
 
-#endif // GNSSDATA_H
+#endif // TIMESTRUCT_H

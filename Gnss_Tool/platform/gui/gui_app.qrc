@@ -6,6 +6,6 @@
         <file>images/start.png</file>
         <file>images/stop.png</file>
         <file>settings.ini</file>
-        <file>serviceList.json</file>
+        <file>platformConfig.json</file>
     </qresource>
 </RCC>
