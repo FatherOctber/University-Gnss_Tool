@@ -1,7 +1,7 @@
 #include "GP6Client.h"
 #include "utils.h"
 
-GP6Client::GP6Client(BufferedData *dataBuffer, QObject *parent): QObject(parent), receivedDataBuffer(dataBuffer)
+GP6Client::GP6Client(BufferedData<SHARED_GNSS_DATA> *dataBuffer, QObject *parent): QObject(parent), receivedDataBuffer(dataBuffer)
 {
     socket = new QTcpSocket(this);
     connect(socket, &QTcpSocket::readyRead, this, &GP6Client::readyRead);
@@ -12,6 +12,12 @@ GP6Client::GP6Client(BufferedData *dataBuffer, QObject *parent): QObject(parent)
     QObject::connect( this, SIGNAL(finished()), thread, SLOT(quit()));
     QObject::connect( thread, SIGNAL(finished()), this, SLOT(deleteLater()) );
     QObject::connect( thread, SIGNAL(finished()), thread, SLOT(deleteLater()) );
+
+    BESTPOS defaultPosition;
+    defaultPosition.lat = Utils::getSettingDefault("DEFAULT_POSITION_LAT", "50.0").toDouble();
+    defaultPosition.lon = Utils::getSetting("DEFAULT_POSITION_LON", "30.0").toDouble();;
+    defaultPosition.height = Utils::getSetting("DEFAULT_POSITION_H", "100.0").toDouble();;
+    ctx = new Context(defaultPosition);
 }
 
 GP6Client::~GP6Client()
@@ -40,8 +46,8 @@ void GP6Client::stop()
 
 void GP6Client::readyRead()
 {
-    Utils::consoleLog("Ready read data");
-    receivedDataBuffer->push(socket->readAll());
+    Utils::consoleLog("Get incoming data");
+    incomingReceiverData.append(socket->readAll());
 }
 
 void GP6Client::connectedTo()
@@ -93,37 +99,4 @@ QByteArray GP6Client::getDataBytes(std::list<std::string> dataToServer)
     **/
     return bytes;
 }
-
-BufferedData::BufferedData()
-{
-}
-
-BufferedData::~BufferedData()
-{
-}
-
-void BufferedData::push(QByteArray data)
-{
-    QMutexLocker locker(&mutex);
-    dataStack.push(data);
-}
-
-QByteArray BufferedData::pop()
-{
-    QMutexLocker locker(&mutex);
-    return dataStack.pop();
-}
-
-QList<QByteArray> BufferedData::popAvailable()
-{
-    QMutexLocker locker(&mutex);
-    QList<QByteArray> result;
-    int size = dataStack.size();
-    while(size > 0) {
-        result.append(dataStack.pop());
-        size--;
-    }
-    return result;
-}
-
 

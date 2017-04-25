@@ -5,19 +5,38 @@
 #include <QtNetwork>
 #include <QStack>
 #include <QMutex>
-class BufferedData
+#include "GP6Parser.h"
+
+template <typename T> class BufferedData
 {
 public:
-    BufferedData();
-    ~BufferedData();
+    BufferedData() {}
+    ~BufferedData() {}
 
-    void push(QByteArray data);
-    QByteArray pop();
-    QList<QByteArray> popAvailable();
+    void push(T data) {
+        QMutexLocker locker(&mutex);
+        dataStack.push(data);
+    }
+
+    T pop() {
+        QMutexLocker locker(&mutex);
+        return dataStack.pop();
+    }
+
+    QList<T> popAvailable() {
+        QMutexLocker locker(&mutex);
+        QList<T> result;
+        int size = dataStack.size();
+        while(size > 0) {
+            result.append(dataStack.pop());
+            size--;
+        }
+        return result;
+    }
 
 private:
     mutable QMutex mutex;
-    QStack<QByteArray> dataStack;
+    QStack<T> dataStack;
 };
 
 class GP6Client: public QObject
@@ -25,7 +44,7 @@ class GP6Client: public QObject
     Q_OBJECT
 
 public:
-    explicit GP6Client(BufferedData* dataBuffer, QObject *parent = 0);
+    explicit GP6Client(BufferedData<SHARED_GNSS_DATA> *dataBuffer, QObject *parent = 0);
     ~GP6Client();
 
 public slots:
@@ -46,8 +65,11 @@ private slots:
 private:
     QTcpSocket *socket;
     QThread *thread;
-    BufferedData* receivedDataBuffer;
+    BufferedData<SHARED_GNSS_DATA>* receivedDataBuffer;
+    QByteArray incomingReceiverData;
     QByteArray dataToSend;
+    GP6Parser parser;
+    Context* ctx;
     QString host;
     int port;
     std::list<std::string> commands;

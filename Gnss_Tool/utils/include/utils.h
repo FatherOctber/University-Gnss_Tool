@@ -26,6 +26,13 @@ public:
         return IniSettingsReader(file).value(key);
     }
 
+    static QString getSettingDefault(QString key, QString defaultValue) {
+        QString val = Utils::getSetting(key);
+        if(val == Utils::nullSettingSymbol()) {
+            return defaultValue;
+        }
+    }
+
     static QList<service_item> getSettingServices(QString jsonFile) {
         return JSonSettingsReader(jsonFile).getPlatformServices();
     }

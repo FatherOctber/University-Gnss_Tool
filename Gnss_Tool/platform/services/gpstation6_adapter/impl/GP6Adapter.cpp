@@ -12,14 +12,14 @@ using namespace cppmicroservices;
 class GP6AdapterService : public AbstractService, public IGP6Adapter
 {
 private:
-    BufferedData* dataBuffer;
+    BufferedData<SHARED_GNSS_DATA>* dataBuffer;
     GP6Client *gpClient;
 
 public:
 
     GP6AdapterService(): AbstractService("GP6Adapter")
     {
-        dataBuffer = new BufferedData();
+        dataBuffer = new BufferedData<SHARED_GNSS_DATA>();
     }
 
     ~GP6AdapterService()
@@ -35,11 +35,11 @@ public:
 
     std::string getAvailableData()
     {
-        QList<QByteArray> clientData = dataBuffer->popAvailable();
+        QList<SHARED_GNSS_DATA> clientData = dataBuffer->popAvailable();
         std::string result = "";
         for(auto data : clientData) {
-            //parse data to gnns data structure
-            result += data.toStdString() + "\n";
+            //set data
+            result += "Test Data\n";
         }
         return result;
     }
