@@ -1,0 +1,29 @@
+# delete CMAKE_SHARED_LINKER_FLAGS and CMAKE_SHARED_LINKER_FLAGS_DEBUG for gfortran compiler
+# mandatory because below flags append to Fortran_FLAGS at linkage
+set(CMAKE_AUTOMOC OFF)
+set(SHARED_FLAGS_TMP ${CMAKE_SHARED_LINKER_FLAGS})
+set(CMAKE_SHARED_LINKER_FLAGS "")
+set(SHARED_FLAGS_DEBUG_TMP ${CMAKE_SHARED_LINKER_FLAGS_DEBUG})
+set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "")
+
+include(CMakeAddFortranSubdirectory)
+# add the fortran subdirectory as a fortran project
+# the subdir is fortran, the project is FortranHello
+cmake_add_fortran_subdirectory(fortran_src
+  PROJECT IRI_2012  # project name in toplevel CMakeLists.txt
+  ARCHIVE_DIR ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
+  RUNTIME_DIR bin # ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+  LIBRARIES hello world # target libraries created
+  CMAKE_COMMAND_LINE
+    -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
+    -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+  LINK_LIBRARIES  # link interface libraries
+   LINK_LIBS hello world  # hello needs world to link
+  NO_EXTERNAL_INSTALL
+  )
+
+# recover CMAKE_SHARED_LINKER_FLAGS and CMAKE_SHARED_LINKER_FLAGS_DEBUG
+set(CMAKE_SHARED_LINKER_FLAGS ${SHARED_FLAGS_TMP})
+set(CMAKE_SHARED_LINKER_FLAGS_DEBUG ${SHARED_FLAGS_DEBUG_TMP})
+set(CMAKE_AUTOMOC ON)
